@@ -25,10 +25,6 @@ def ask(question,
 
     if not isinstance(logtype, bool):
         raise TypeError('postional argument `logtype` must be a bool object, but got %s'%(type(logtype).__name__, ))
-
-
-    if not isinstance(logtype, bool):
-        raise TypeError('postional argument `logtype` must be a bool object, but got %s'%(type(logtype).__name__, ))
     
     if not isinstance(question, str):
         raise TypeError('positional argument `question` must be a str object, but got %s'%(type(question).__name__), )
@@ -43,7 +39,7 @@ def ask(question,
         choices = list(set([str(choice).strip() for choice in choices]))
         if len(choices) < 2:
             raise ValueError('positional argument `choices` must have atleast 2 choices')
-        question += '(%s)'%('/ '.join(choices), )
+        question += ' (%s)'%('/ '.join(choices), )
         
 
     if default is not None:
@@ -60,10 +56,10 @@ def ask(question,
                         break
                 else:
                     if choice == default:
-                        invalid_answer = False
+                        invalid_default = False
                         break
             if invalid_default:
-                raise ValueError('positional argument `default` is having an invalid value')
+                raise ValueError('positional argument `default` is having an invalid value %s'%(default, ))
 
         question += '[%s]'%(default, )
     
@@ -109,7 +105,7 @@ def ask(question,
                         answers.append(choice)
                         invalid_answer = False
                 else:
-                    if choice.startswith(choice):
+                    if choice.startswith(answer):
                         answers.append(choice)
                         invalid_answer = False
         
@@ -117,7 +113,14 @@ def ask(question,
             on_error(question, choices, default, 'Invalid answer by the user')
         else:
             if len(answers) > 1:
-                on_error(question, choices, default, 'Multiple answers have been matched')
+                answer_found = False
+                for choice in choices:
+                    if answer.upper() == choice.upper():
+                        answer_found = True
+                        on_success(question, choice)
+                        break
+                if not answer_found:
+                    on_error(question, choices, default, 'Multiple answers have been matched')
             else:
                 on_success(question, answers[0])
     return answer
