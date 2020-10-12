@@ -4,7 +4,7 @@ PyMsgPrompt is a python module to embed prompt functionality in your code.
 
 ## Version
 
-The current version of this module is `0.0.4` and this is the first Alpha release, however, you can run the below command to check the version of the module.
+The current version of this module is `0.0.5` and this is the second Alpha release after version `0.0.4`, however, you can run the below command to check the version of the module.
 
 ```bash
 python -m pymsgprompt.version
@@ -24,6 +24,12 @@ To install this module you can use clone with git or just simply run pip install
 git clone https://github.com/antaripchatterjee/PyMsgPrompt.git
 cd PyMsgPrompt
 python setup.py install
+```
+
+### Using pip
+
+```bash
+pip install pymsgprompt
 ```
 
 ## Uninstallation

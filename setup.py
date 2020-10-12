@@ -46,7 +46,6 @@ setup(
     description='''
         PyMsgPrompt is a python module to embed prompt functionality in your code.
         Current Version of the module is {0}
-        This module has been compiled with Python - {1}
     '''.format(meta.version_info, '.'.join(map(lambda e: str(e), os.sys.version_info[0:3]))),
     long_description=readme(),
     long_description_content_type='text/markdown',
