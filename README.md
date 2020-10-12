@@ -1,14 +1,18 @@
 # PyMsgPrompt
 
-PyMsgPrompt is a python module to embed prompt functionality in you your code.
+PyMsgPrompt is a python module to embed prompt functionality in your code.
 
 ## Version
 
-The current version is `0.0.3` and this is the first Alpha release.
+The current version of this module is `0.0.4` and this is the first Alpha release, however, you can run the below command to check the version of the module.
+
+```bash
+python -m pymsgprompt.version
+```
 
 ## Platform Supports
 
-This is a cross platform module and also supports python 2 and 3.
+This is a cross platform module and supported both in python 2 and 3.
 
 ## Installation
 
@@ -52,7 +56,7 @@ I am already working on some other functionality, which will be provided in the 
 
 ## License
 
-This module is licensed under MIT license.
+This module is licensed under [MIT License](https://github.com/antaripchatterjee/PyMsgPrompt/blob/master/LICENSE).
 
 ## Contribution
 

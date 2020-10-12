@@ -5,3 +5,7 @@ debug.*
 *.txt
 *.log
 *.pyc
+/test_env_win32_py3/*
+/test_env_unix_py3/*
+/test_env_unix_py2/*
+/PyMsgPrompt.egg-info/*
