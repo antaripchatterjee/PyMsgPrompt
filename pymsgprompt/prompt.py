@@ -2,18 +2,7 @@ import sys
 import re
 import time
 
-def default_on_error(question, choices, default, error):
-    '''
-    A default callback after failed validation of the answer
-    '''
-    print(error, file=sys.stderr)
-
-def default_on_success(question, answer):
-    '''
-    A default callback after successful validation of the answer
-    '''
-
-    print('The answer is %s'%(answer, ))
+from pymsgprompt.handler import default_on_error, default_on_success
 
 
 def ask(question,
@@ -124,5 +113,4 @@ def ask(question,
             else:
                 on_success(question, answers[0])
     return answer
-    
     

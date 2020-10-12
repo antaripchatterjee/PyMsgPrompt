@@ -1,1 +1,7 @@
-/pyask/__pycache__/
+/pymsgprompt/__pycache__/
+/build/*
+/dist/*
+debug.*
+*.txt
+*.log
+*.pyc
