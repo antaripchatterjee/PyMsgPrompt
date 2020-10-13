@@ -1,19 +1,92 @@
 import sys
 import re
 import time
+import _io
+import platform
 
 from pymsgprompt.handler import default_on_error, default_on_success
 
 
+
+if 'WINDOWS' in platform.platform().upper(): 
+    __universal_newline__ = '\r\n'
+elif 'LINUX' in platform.platform().upper() or 'UNIX' in platform.platform().upper():
+    __universal_newline__ = '\n'
+elif platform.mac_ver()[0].strip() == '':
+    if int(platform.mac_ver()[0].strip().split()[0]) > 9:
+        __universal_newline__ = '\n'
+    else:
+        __universal_newline__ = '\r'
+else:
+    __universal_newline__ = '\n'
+
+__prev_print_len__ = 0 # Don't modify this line
+
+
+def log(message, logtype='info', end=__universal_newline__, file=None, timestamp=True, reset=False):
+    global __prev_print_len__
+    if not isinstance(message, str):
+        raise TypeError('positional argument `message` must be a str object, but got %s'%(type(message).__name__), )
+
+    if not isinstance(logtype, str):
+        raise TypeError('postional argument `logtype` must be a str object, but got %s'%(type(logtype).__name__, ))
+    
+    logtype = logtype.lower().strip()
+    if logtype not in('info', 'warn', 'error'):
+        raise ValueError('positional argument logtype must be among `info` or `err` or `error`.')
+
+    if end is not None and not isinstance(end, str):
+        raise TypeError('positional argument `end` must be either None or a str object, but got %s'%(type(end).__name__, ))
+    
+    if file is not None and not isinstance(file, _io.TextIOWrapper):
+        raise TypeError('positional argument `file` must be either None or a _io.TextIOWrapper object, but got %s'%(type(file).__name__), ) 
+
+    if not isinstance(timestamp, bool):
+        raise TypeError('postional argument `timestamp` must be a bool object, but got %s'%(type(timestamp).__name__, ))
+
+    if end is None:
+        sameline = True
+        end = '\r'
+        if file is not None:
+            raise ValueError('positional argument `file` must be `None` when `end` is `None`.')
+    else:
+        sameline = False
+    if file is None:
+        file = sys.stderr if logtype in ('error', 'warn') else sys.stdout
+    else:
+        if file.writable():
+            if 'b' in file.mode:
+                raise ValueError('positional argument `file` should be opened in `write string` mode only')
+        else:
+            raise ValueError('positional argument `file` must be opened in `write string` mode only')
+
+    if timestamp:
+        msg_prefix = '[%s] %s: '%(logtype.upper(), time.strftime(r'%Y-%b-%d %H:%M:%S', time.localtime()))
+    else:
+        msg_prefix = ''
+    message = '%s%s'%(msg_prefix, message)
+    __this_print_len__ = len(message)
+    if __prev_print_len__ > __this_print_len__:
+        message += ' '*(__prev_print_len__ - __this_print_len__)
+    message += end
+    file.write(message)
+    if sameline:
+        file.flush()
+    __prev_print_len__ = __this_print_len__
+    if reset:
+        __prev_print_len__ = 0
+    return __this_print_len__
+
+
 def ask(question,
-            choices=None, default=None, logtype=True,
+            choices=None, default=None, timestamp=True,
             regexp=False, ignore_case=True,
             on_error=default_on_error, on_success=default_on_success):
     if not isinstance(regexp, bool):
-        raise TypeError('postional argument `regexp` must be a bool object, but got %s'%(type(logtype).__name__, ))
+        raise TypeError('postional argument `regexp` must be a bool object, but got %s'%(type(timestamp).__name__, ))
 
-    if not isinstance(logtype, bool):
-        raise TypeError('postional argument `logtype` must be a bool object, but got %s'%(type(logtype).__name__, ))
+    if not isinstance(timestamp, bool):
+        raise TypeError('postional argument `timestamp` must be a bool object, but got %s'%(type(timestamp).__name__, ))
     
     if not isinstance(question, str):
         raise TypeError('positional argument `question` must be a str object, but got %s'%(type(question).__name__), )
@@ -52,7 +125,7 @@ def ask(question,
 
         question += '[%s]'%(default, )
     
-    if logtype:
+    if timestamp:
         question = '[QUES] %s: %s'%(time.strftime(r'%Y-%b-%d %H:%M:%S', time.localtime()), question)
     answer = None
     if sys.version_info[0] == 2:
