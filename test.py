@@ -10,7 +10,7 @@ if __name__ == '__main__':
     else:
         log('Answer is %s'%answer, logtype='info', timestamp=False, reset=True)
     for i in range(1000, 0, -1):
-        log('The message is %d'%i, timestamp=True, end=None)
+        log('The message is %d'%i, timestamp=True, end=None if i > 1 else '\n', reset=i==1)
         time.sleep(0.01)
     
     pinfo('I am a Python Developer')

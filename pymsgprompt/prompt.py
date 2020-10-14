@@ -24,6 +24,17 @@ __prev_print_len__ = 0 # Don't modify this line
 
 
 def log(message, logtype='info', end=__universal_newline__, file=None, timestamp=True, reset=False):
+    '''
+    message is a str type argument, which will be logged onto the file object
+    logtype specifies, if the message is info or warn or error typed, default is 'info'
+        among 'info', 'warn' and 'error'
+    end is same as universal newline by default but can be any str object. It can also be None,
+        which prints the next message in the same line
+    file is _io.TextIOWrapper object and can be None also, and if None, it will take the stdout and stderr,
+        depending on the logtype
+    timestamp is a bool object and if it is True, logtype and timestamp will be printed as well
+    reset is a bool type object, sets the value of global variable __prev_print_len__ to 0
+    '''
     global __prev_print_len__
     if not isinstance(message, str):
         raise TypeError('positional argument `message` must be a str object, but got %s'%(type(message).__name__), )
@@ -82,6 +93,16 @@ def ask(question,
             choices=None, default=None, timestamp=True,
             regexp=False, ignore_case=True,
             on_error=default_on_error, on_success=default_on_success):
+    '''
+    question is str object which will be asked to user
+    choices, if not None, the answer to question must be among the choices
+    default, if the provided answer is empty, the answer will be having the value of default argument
+    timestamp, if True, a timestamp will be printed as well
+    regexp, if True, the answer will be matched using regular expression
+    ignore_case, if True, the answer will checked case insensitively
+    on_error, an callback handler, executed only if the answer is wrong, takes four arguments, question, choices, default and an error message
+    on_success, an callback handler, executed only if the answer is wrong, takes two arguments, question and answer
+    '''
     if not isinstance(regexp, bool):
         raise TypeError('postional argument `regexp` must be a bool object, but got %s'%(type(timestamp).__name__, ))
 
