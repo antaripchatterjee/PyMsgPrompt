@@ -2,7 +2,7 @@ from pymsgprompt.prompt import ask, log
 from pymsgprompt.logger import perror, pinfo, pwarn
 import time
 if __name__ == '__main__':
-    answer = ask('Do you want to close?', choices=['yes', 'no', 'yesss'], default='no', timestamp=True, regexp=True, ignore_case=False)
+    answer = ask('Do you want to close?', choices=['yes', 'no', 'not sure'], default='yes', timestamp=True, regexp=True, ignore_case=False)
     # with open('test.txt', 'w') as test:
     #     print (log('Answer is %s'%answer, logtype='error', timestamp=True, file=test))
     if answer.startswith('n'):

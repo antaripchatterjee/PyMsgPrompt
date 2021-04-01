@@ -4,7 +4,7 @@ PyMsgPrompt is a python module to embed prompt functionality in your code.
 
 ## Version
 
-The current version of this module is `1.2.2` and this is the second BETA release after first BETA version `1.1.1`, however, you can run the below command to check the version of the module.
+The current version of this module is `1.3.0` and this is the third BETA release after first BETA version `1.2.2`, however, you can run the below command to check the version of the module.
 
 ```bash
 python -m pymsgprompt.version
@@ -49,7 +49,7 @@ from pymsgprompt.prompt import ask, log
 from pymsgprompt.logger import perror, pinfo, pwarn
 import time
 if __name__ == '__main__':
-    answer = ask('Do you want to close?', choices=['yes', 'no', 'yesss'], default='no', timestamp=True, regexp=True, ignore_case=False)
+    answer = ask('Do you want to close?', choices=['yes', 'no', 'not sure'], default='yes', timestamp=True, regexp=True, ignore_case=False)
     # with open('test.txt', 'w') as test:
     #     print (log('Answer is %s'%answer, logtype='error', timestamp=True, file=test))
     if answer.startswith('n'):
@@ -68,22 +68,24 @@ if __name__ == '__main__':
 Below is the output,
 
 ```output
-[QUES] 2020-Oct-14 22:11:08: Do you want to close? (no/ yes/ yesss)[no]
-no
-Answer is no
-[INFO] 2020-Oct-14 22:11:21: The message is 1
-[INFO] 2020-Oct-14 22:11:21: I am a Python Developer
-[WARN] 2020-Oct-14 22:11:21: Some kind of warning message
-[ERROR] 2020-Oct-14 22:11:21: Some kind of error message
+[QUES] 2021-Apr-01 22:27:50: Do you want to close? (yes/ no/ not sure)[yes]not
+not sure
+Answer is not sure
+[INFO] 2021-Apr-01 22:28:11: The message is 1   
+[INFO] 2021-Apr-01 22:28:11: I am a Python Developer
+[WARN] 2021-Apr-01 22:28:11: Some kind of warning message
+[ERROR] 2021-Apr-01 22:28:11: Some kind of error message
 ```
 
 ## API Reference
 
+`pymsgprompt.prompt.ask` function takes two positional arguments `on_success` and `on_error`, and they expect two callback functions, which will be called after validating the answer. The default value of them are `pymsgprompt.handler.default_on_success` and `pymsgprompt.handler.default_on_error` respectively.
+
+The callback function for `on_success` takes three arguments, which are `question`, `actual_answer` and `original_answer`. The `ask` function returns the same value, actually returned by the callback function. The default function returns the `original_answer`.
+
+The callback function for `on_error` takes four arguments, which are `question`, `choices`, `default`, and `error`. This value must return either `True`, means the question should be reasked, or `False`, means no need to ask the question again. The default function returns the `False`.
+
 A good documentation, specially for the developers, will be provided later.
-
-## Development Areas
-
-I am already working on some other functionalities, which will be provided in the future releases.
 
 ## License
 

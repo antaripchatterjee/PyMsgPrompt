@@ -1,7 +1,7 @@
 import sys
 import re
 import time
-import _io
+from _io import TextIOWrapper
 import platform
 
 from pymsgprompt.handler import default_on_error, default_on_success
@@ -49,7 +49,7 @@ def log(message, logtype='info', end=__universal_newline__, file=None, timestamp
     if end is not None and not isinstance(end, str):
         raise TypeError('positional argument `end` must be either None or a str object, but got %s'%(type(end).__name__, ))
     
-    if file is not None and not isinstance(file, _io.TextIOWrapper):
+    if file is not None and not isinstance(file, TextIOWrapper):
         raise TypeError('positional argument `file` must be either None or a _io.TextIOWrapper object, but got %s'%(type(file).__name__), ) 
 
     if not isinstance(timestamp, bool):
@@ -101,7 +101,7 @@ def ask(question,
     regexp, if True, the answer will be matched using regular expression
     ignore_case, if True, the answer will checked case insensitively
     on_error, an callback handler, executed only if the answer is wrong, takes four arguments, question, choices, default and an error message
-    on_success, an callback handler, executed only if the answer is wrong, takes two arguments, question and answer
+    on_success, an callback handler, executed only if the answer is valid, takes three arguments, question, answer and original_answer
     '''
     if not isinstance(regexp, bool):
         raise TypeError('postional argument `regexp` must be a bool object, but got %s'%(type(timestamp).__name__, ))
@@ -111,6 +111,17 @@ def ask(question,
     
     if not isinstance(question, str):
         raise TypeError('positional argument `question` must be a str object, but got %s'%(type(question).__name__), )
+    
+    question_copy = question
+    choices_copy = choices
+    default_copy = default
+    timestamp_copy = timestamp
+    regexp_copy = regexp
+    ignore_case_copy = ignore_case
+    on_error_copy = on_error
+    on_success_copy = on_success
+
+
     question = question.strip()
     if not question.endswith('?'):
         question += '?'
@@ -119,7 +130,11 @@ def ask(question,
             raise TypeError('positional argument `choices` must be either either list, tuple type or a NoneType object, but got %s'%(
                 type(choices).__name__),
             )
-        choices = list(set([str(choice).strip() for choice in choices]))
+        choices_ = [str(choice).strip() for choice in choices]
+        choices = []
+        for choice in choices_:
+            if choice not in choices:
+                choices.append(choice)
         if len(choices) < 2:
             raise ValueError('positional argument `choices` must have atleast 2 choices')
         question += ' (%s)'%('/ '.join(choices), )
@@ -161,7 +176,13 @@ def ask(question,
         elif choices is not None:
             answer=choices[0]
         else:
-            on_success(question, answer)
+            # on_success(question, answer) 
+            if on_error(question, choices, default, 'Skipping the question! No default value has been assumed!'):
+                answer = ask(question_copy, choices=choices_copy, default=default_copy,
+                            timestamp=timestamp_copy, regexp=regexp_copy, ignore_case=ignore_case_copy,
+                            on_error=on_error_copy, on_success=on_success_copy
+                        )
+    original_answer = answer
     if choices is not None:
         answers = []
         invalid_answer = True
@@ -193,18 +214,26 @@ def ask(question,
                         invalid_answer = False
         
         if invalid_answer:
-            on_error(question, choices, default, 'Invalid answer by the user')
+            if on_error(question, choices, default, 'Invalid answer given by the user'):
+                answer = ask(question_copy, choices=choices_copy, default=default_copy,
+                        timestamp=timestamp_copy, regexp=regexp_copy, ignore_case=ignore_case_copy,
+                        on_error=on_error_copy, on_success=on_success_copy
+                    )
         else:
             if len(answers) > 1:
                 answer_found = False
                 for choice in choices:
                     if answer.upper() == choice.upper():
                         answer_found = True
-                        on_success(question, choice)
+                        answer = on_success(question, choice, original_answer)
                         break
                 if not answer_found:
-                    on_error(question, choices, default, 'Multiple answers have been matched')
+                    if on_error(question, choices, default, 'Multiple answers have been matched'):
+                        answer = ask(question_copy, choices=choices_copy, default=default_copy,
+                            timestamp=timestamp_copy, regexp=regexp_copy, ignore_case=ignore_case_copy,
+                            on_error=on_error_copy, on_success=on_success_copy
+                        )
             else:
-                on_success(question, answers[0])
+                answer = on_success(question, answers[0], original_answer)
     return answer
     
